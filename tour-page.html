@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tour-page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Tailwind config: our own colors and fonts
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              night: "#0B1F26",
+              deep: "#12343B",
+              glass: "#7FD1C0",
+              lamp: "#F2C14E",
+              sand: "#EADFC8",
+            },
+            fontFamily: {
+              display: ["Syne", "sans-serif"],
+              body: ["DM Sans", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* One animated moment: the "lamp" glow in the hero */
+      @keyframes glow {
+        0%,
+        100% {
+          opacity: 0.55;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.9;
+          transform: scale(1.08);
+        }
+      }
+      .lamp {
+        animation: glow 6s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .lamp {
+          animation: none;
+        }
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+    <script defer src="script.js" defer></script>
+  </head>
+
+  <body class="bg-night text-sand font-body antialiased">
+    <!-- HEADER -->
+    <header
+      class="sticky top-0 z-30 bg-night/90 backdrop-blur border-b border-glass/20"
+    >
+      <div
+        class="max-w-5xl mx-auto flex items-center justify-between px-5 py-3"
+      >
+        <a href="#top" class="font-display font-extrabold text-lg"
+          >The Night Orchard</a
+        >
+        <nav class="hidden sm:flex gap-6 text-sm">
+          <a href="#dates" class="hover:text-lamp">Tour dates</a>
+          <a href="#club" class="hover:text-lamp">Fan club</a>
+        </nav>
+        <button
+          id="openCart"
+          class="rounded-full border border-lamp px-4 py-1.5 text-sm font-medium text-lamp hover:bg-lamp hover:text-night focus:outline-none focus-visible:ring-2 focus-visible:ring-lamp"
+        >
+          Cart (<span id="cartCount">0</span>)
+        </button>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="relative overflow-hidden">
+        <div
+          class="lamp absolute -top-24 right-[-6rem] h-80 w-80 rounded-full bg-lamp/40 blur-3xl"
+        ></div>
+        <div class="relative max-w-5xl mx-auto px-5 py-24 sm:py-32">
+          <p class="text-glass text-sm mb-4">
+            New album out now. 12 cities, one tour.
+          </p>
+          <h1
+            class="font-display font-extrabold text-5xl sm:text-7xl leading-[1.05]"
+          >
+            Low Tide<br />Lights Tour
+          </h1>
+          <p class="mt-6 max-w-md text-sand/80 leading-relaxed">
+            Slow guitars, loud harbours. The Night Orchard play their new record
+            front to back, then everything you came for.
+          </p>
+          <a
+            href="#dates"
+            class="inline-block mt-8 rounded-full bg-lamp px-6 py-3 font-bold text-night hover:bg-sand focus:outline-none focus-visible:ring-2 focus-visible:ring-sand"
+          >
+            Find a show
+          </a>
+        </div>
+      </section>
+
+      <!-- TOUR DATES (filled in by JavaScript) -->
+      <section id="dates" class="max-w-5xl mx-auto px-5 py-16">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+          <h2 class="font-display font-bold text-3xl">Tour dates</h2>
+          <label class="text-sm">
+            <span class="mr-2 text-sand/70">Show</span>
+            <select
+              id="filter"
+              class="bg-deep border border-glass/30 rounded-lg px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-lamp"
+            >
+              <option value="all">All cities</option>
+            </select>
+          </label>
+        </div>
+        <ul
+          id="showList"
+          class="divide-y divide-glass/20 border-y border-glass/20"
+        ></ul>
+      </section>
+
+      <!-- FAN CLUB -->
+      <section id="club" class="bg-deep">
+        <div class="max-w-5xl mx-auto px-5 py-16">
+          <h2 class="font-display font-bold text-3xl">Join the fan club</h2>
+          <p class="mt-3 max-w-lg text-sand/80">
+            Pick a plan and get first access to tickets before they go on sale
+            to everyone.
+          </p>
+          <div class="mt-10 grid gap-6 sm:grid-cols-3" id="plans"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="max-w-5xl mx-auto px-5 py-10 text-sm text-sand/60">
+      <p>&copy; 2023 The Night Orchard. All rights reserved.</p>
+    </footer>
+
+    <!-- CART DRAWER -->
+    <div id="overlay" class="hidden fixed inset-0 z-40 bg-black/60"></div>
+    <aside
+      id="drawer"
+      class="fixed top-0 right-0 z-50 h-full w-full max-w-sm translate-x-full transition-transform duration-300 bg-night border-l border-glass/30 flex flex-col"
+      aria-label="Your cart"
+    >
+      <div
+        class="flex items-center justify-between p-5 border-b border-glass/20"
+      >
+        <h2 class="font-display font-bold text-xl">Your cart</h2>
+        <button
+          id="closeCart"
+          class="text-sand/70 hover:text-lamp focus:outline-none focus-visible:ring-2 focus-visible:ring-lamp rounded"
+          aria-label="Close cart"
+        >
+          Close
+        </button>
+      </div>
+      <ul id="cartList" class="flex-1 overflow-y-auto p-5 space-y-4"></ul>
+      <div class="p-5 border-t border-glass/20">
+        <div class="flex justify-between font-bold mb-4">
+          <span>Total</span><span id="cartTotal">$0</span>
+        </div>
+        <button
+          id="checkoutBtn"
+          class="w-full rounded-full bg-lamp py-3 font-bold text-night disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-sand"
+        >
+          Check out
+        </button>
+      </div>
+    </aside>
+
+    <!-- CHECKOUT MODAL -->
+    <div
+      id="modal"
+      class="hidden fixed inset-0 z-[60] flex items-center justify-center p-5 bg-black/70"
+    >
+      <div
+        class="w-full max-w-md rounded-2xl bg-deep p-6 border border-glass/30"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <h2 id="modalTitle" class="font-display font-bold text-2xl">
+          Check out
+        </h2>
+        <form id="checkoutForm" class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="name" class="block text-sm mb-1">Full name</label>
+            <input
+              id="name"
+              type="text"
+              class="w-full rounded-lg bg-night border border-glass/30 px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-lamp"
+            />
+          </div>
+          <div>
+            <label for="email" class="block text-sm mb-1">Email</label>
+            <input
+              id="email"
+              type="email"
+              class="w-full rounded-lg bg-night border border-glass/30 px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-lamp"
+            />
+          </div>
+          <p id="formError" class="hidden text-sm text-lamp"></p>
+
+          <div class="flex gap-3 pt-2">
+            <button
+              type="button"
+              id="cancelBtn"
+              class="flex-1 rounded-full border border-sand/40 py-2.5 hover:border-lamp"
+            >
+              Back to cart
+            </button>
+            <button
+              type="submit"
+              class="flex-1 rounded-full bg-lamp py-2.5 font-bold text-night"
+            >
+              Place order
+            </button>
+          </div>
+        </form>
+        <div id="success" class="hidden mt-5">
+          <p id="successText" class="text-sand/90"></p>
+          <button
+            id="doneBtn"
+            class="mt-6 w-full rounded-full bg-lamp py-2.5 font-bold text-night"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
